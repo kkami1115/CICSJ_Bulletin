@@ -1,8 +1,14 @@
 ---
-title: Visualization of metabolites using rWikiPathways and RCy3
-auther: ken kamiya
-date: 2019/067/07
+title: "Visualization of metabolites using rWikiPathways and RCy3"
+auther: "ken kamiya"
+date: "2019/07/07"
+output: html_document
+
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 #Abstract
 This is the support page for "メタボロームデータ解析および解釈に資する可視化手法" in CICSJ Bulletin July 2019.
