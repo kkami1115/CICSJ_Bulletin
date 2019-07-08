@@ -90,13 +90,13 @@ In addition, MetaboAnalyst can analyze while generating R code, so it is also po
 ```{get ids of metabolite data using metaboanalystr}
 mSet<-InitDataObjects("NA", "utils", FALSE)
 cmpd.vec<- rownames(AraMetLeaves)
-mSet<-Setup.MapData(mSet, cmpd.vec);
-mSet<-CrossReferencing(mSet, "name", T, T, T, T, T);
+mSet<-Setup.MapData(mSet, cmpd.vec)
+mSet<-CrossReferencing(mSet, "name", T, T, T, T, T)
 mSet<-CreateMappingResultTable(mSet)
-mSet<-PerformDetailMatch(mSet, "Inositol-1-phosphate");
-mSet<-GetCandidateList(mSet);
-mSet<-SetCandidate(mSet, "Inositol-1-phosphate", "Inositol phosphate");
-mSet<-PerformDetailMatch(mSet, "D-Glucose-6-phosphate");
+mSet<-PerformDetailMatch(mSet, "Inositol-1-phosphate")
+mSet<-GetCandidateList(mSet)
+mSet<-SetCandidate(mSet, "Inositol-1-phosphate", "Inositol phosphate")
+mSet<-PerformDetailMatch(mSet, "D-Glucose-6-phosphate")
 mSet<-GetCandidateList(mSet)
 mSet<-SetCandidate(mSet, "D-Glucose-6-phosphate", "Beta-D-Glucose 6-phosphate")
 ```
