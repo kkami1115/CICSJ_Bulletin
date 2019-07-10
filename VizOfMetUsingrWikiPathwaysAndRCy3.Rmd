@@ -1,10 +1,8 @@
 ---
 title: "Visualization of metabolites using rWikiPathways and RCy3"
 date: "2019/07/07"
-output:
-  html_document: default
-  word_document: default
-auther: ken kamiya
+output: github_document
+author: ken kamiya
 ---
 
 ```{r setup, include=FALSE}
@@ -18,13 +16,18 @@ This page describes the script in detail regarding the last chapter of pathway v
 
 # Data
 Datasets and assets I used are here.
+
+
  - Pathway 
    AtMetExpress Overview - Wikipathways https://www.wikipathways.org/index.php/Pathway:WP3622
 
  - Metabolite data
   AraMetLeaves - attached to DiffCorr package
+
+
   The Arabidopsis metabolome of the aerial regions of individual WT plants and the mto1 and tt4 mutants were analyzed by GC-TOF/MS.
   mto1 shows strong methionine accumulation.
+  
    - DiffCorr: https://cran.r-project.org/package=DiffCorr
    - Reference of metabolite data: M. Kusano et al, (2007) https://doi.org/10.1186/1752-0509-1-53
 
