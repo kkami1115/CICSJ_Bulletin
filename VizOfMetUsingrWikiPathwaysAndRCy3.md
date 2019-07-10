@@ -6,8 +6,10 @@ ken kamiya
 # Abstract
 
 This is the support page for “メタボロームデータ解析および解釈に資する可視化手法” in CICSJ
-Bulletin July 2019. This page describes the script in detail regarding
-the last chapter of pathway visualization.
+Bulletin July 2019.
+
+This page describes the script in detail regarding the last chapter of
+pathway visualization.
 
 # Data
 
@@ -29,18 +31,25 @@ strong methionine accumulation.
 # Step 0: Intstall Cytoscape
 
 If you haven’t yet installed Cytoscape, install it before running this
-script. <https://cytoscape.org/download.html> The following script only
-works if you have launched Cytoscape.
+script.
+
+<https://cytoscape.org/download.html>
+
+The following script only works if you have launched Cytoscape.
 
 # Step 1: Prepare R Packages and Metabolite Data
 
 This pattern of installation had succeeded on my environment(Ubuntu
-16.04, R 3.6.0). It doesn’t matter how you do it, so install
-“rWikiPathways”, “RCy3”, “MetabAnalystR” according to your own
-environment. - Especially, Installing MetaboAnalystR is extremely
-difficult, so please refer to
-(<https://github.com/xia-lab/MetabanaristR>) for
+16.04, R 3.6.0).
+
+It doesn’t matter how you do it, so install “rWikiPathways”, “RCy3”,
+“MetabAnalystR” according to your own environment.
+
+  - Especially, Installing MetaboAnalystR is extremely difficult, so
+    please refer to (<https://github.com/xia-lab/MetabanaristR>) for
     installation.
+
+<!-- end list -->
 
 ``` r
 install.packages("BiocManager", repos = "https://cran.rstudio.com")
@@ -165,8 +174,11 @@ mto1Mean <-  apply(AraMetLeaves[, mto1.index], 1, mean)
 
 ## Get graphIds from the pathway
 
-Before getting pathways you need to know “graphId” in WikiPathways.
+Before getting pathways you need to know “graphId” in
+WikiPathways.
+
 <https://www.wikipathways.org/index.php/Help:WikiPathways_Webservice/API#GraphId>
+
 graphId is an individual ID of a metabolite assigned in the pathway. By
 using this, the pathway metabolite and metabolite data are
 linked.
@@ -183,11 +195,16 @@ for(i in 1:length(pathway.HMDBIDs)){
 
 ## Get IDs of metabolite data using MetaboAnalystR
 
-Metabolite data names are written in various ways and are not stable. So
-we convert names to IDs such as HMDB or KEGG using MetaboAnalystR. The
-same can be done with MetaboAnalyst (<https://metaboanalyst.ca>) on the
-Web. Entering a metabolite name returns the match result recognized by
+Metabolite data names are written in various ways and are not stable.
+
+So we convert names to IDs such as HMDB or KEGG using MetaboAnalystR.
+
+The same can be done with MetaboAnalyst (<https://metaboanalyst.ca>) on
+the Web.
+
+Entering a metabolite name returns the match result recognized by
 MetaBoAnalyst, so you can absorb minor differences in metabolite names.
+
 In addition, MetaboAnalyst can analyze while generating R code, so it is
 also possible to use the displayed R code in MetaBoAnalystR after
 performing ID conversion manually with MetaboAnalyst on the Web.
@@ -294,8 +311,9 @@ mSet.map.table.graphId.log2FC <-  data.frame(mSet.map.table, mSet.graphIds, log2
 
 # Step 3: Connect to Cytoscape and Visualize
 
-Connect to Cytoscape using RCy3 for visualization. **Start Cytoscape
-before running this chapter**
+Connect to Cytoscape using RCy3 for visualization.
+
+**Start Cytoscape before running this chapter**
 
 ``` r
 #Install Wikipathways addin to Cytoscape
