@@ -1,20 +1,21 @@
 ---
 title: "Visualization of metabolites using rWikiPathways and RCy3"
-auther: "ken kamiya"
 date: "2019/07/07"
-output: html_document
-
+output:
+  html_document: default
+  word_document: default
+auther: ken kamiya
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#Abstract
+# Abstract
 This is the support page for "メタボロームデータ解析および解釈に資する可視化手法" in CICSJ Bulletin July 2019.
 This page describes the script in detail regarding the last chapter of pathway visualization.
 
-#Data
+# Data
 Datasets and assets I used are here.
  - Pathway 
    AtMetExpress Overview - Wikipathways https://www.wikipathways.org/index.php/Pathway:WP3622
@@ -27,33 +28,34 @@ Datasets and assets I used are here.
    - Reference of metabolite data: M. Kusano et al, (2007) https://doi.org/10.1186/1752-0509-1-53
 
 
-#Step 0: Intstall Cytoscape
+# Step 0: Intstall Cytoscape
 If you haven't yet installed Cytoscape, install it before running this script.
 https://cytoscape.org/download.html
 The following script only works if you have launched Cytoscape.
 
-#Step 1: Prepare R Packages and Metabolite Data
+# Step 1: Prepare R Packages and Metabolite Data
 This pattern of installation had succeeded on my environment(Ubuntu 16.04, R 3.6.0).
 It doesn't matter how you do it, so install "rWikiPathways", "RCy3", "MetabAnalystR" according to your own environment.
+ - Especially, Installing MetaboAnalystR is extremely difficult, so please refer to (https://github.com/xia-lab/MetabanaristR) for installation.
 
 ```{r prepare R packages}
-install.packages("BiocManager")
+install.packages("BiocManager", repos = "https://cran.rstudio.com")
 BiocManager::install("rWikiPathways")
 library(rWikiPathways)
 BiocManager::install("RCy3")
 library(RCy3)
 
 #Prepare MetaboAnalystR
-install.packages("pacman")
+install.packages("pacman", repos = "https://cran.rstudio.com")
 library(pacman)
 pacman::p_load(Rserve, ellipse, scatterplot3d, Cairo, randomForest, caTools, e1071, som, impute, pcaMethods, RJSONIO, ROCR, globaltest, GlobalAncova, Rgraphviz, preprocessCore, genefilter, pheatmap, SSPA, sva, Rcpp, pROC, data.table, limma, car, fitdistrplus, lars, Hmisc, magrittr, methods, xtable, pls, caret, lattice, igraph, gplots, KEGGgraph, reshape, RColorBrewer, tibble, siggenes, plotly, xcms, CAMERA, fgsea, MSnbase, BiocParallel, metap, reshape2, scales)
-install.packages("devtools")
+install.packages("devtools", repos = "https://cran.rstudio.com")
 library(devtools)
 devtools::install_github("xia-lab/MetaboAnalystR", build = TRUE, build_opts = c("--no-resave-data", "--no-manual", "--no-build-vignettes"))
 library(MetaboAnalystR)
 ```
 ```{r prepare metabolite data}
-install.packages("DiffCorr")
+install.packages("DiffCorr", repos = "https://cran.rstudio.com")
 library(DiffCorr)
 data("AraMetLeaves") #data for visualization
 
@@ -63,9 +65,9 @@ Col0Mean <-  apply(AraMetLeaves[, Col0.index], 1, mean)
 mto1Mean <-  apply(AraMetLeaves[, mto1.index], 1, mean)
 ```
 
-#Step 2: Gather informations (espescially metabolite ID)
+# Step 2: Gather informations (espescially metabolite ID)
 
-##Get graphIds from the pathway
+## Get graphIds from the pathway
 Before getting pathways you need to know "graphId" in WikiPathways.
 https://www.wikipathways.org/index.php/Help:WikiPathways_Webservice/API#GraphId
 graphId is an individual ID of a metabolite assigned in the pathway. By using this, the pathway metabolite and metabolite data are linked.
@@ -81,7 +83,7 @@ for(i in 1:length(pathway.HMDBIDs)){
 }
 ```
 
-##Get IDs of metabolite data using MetaboAnalystR
+## Get IDs of metabolite data using MetaboAnalystR
 Metabolite data names are written in various ways and are not stable.
 So we convert names to IDs such as HMDB or KEGG using MetaboAnalystR.
 The same can be done with MetaboAnalyst (https://metaboanalyst.ca) on the Web. Entering a metabolite name returns the match result recognized by MetaBoAnalyst, so you can absorb minor differences in metabolite names.
@@ -101,7 +103,7 @@ mSet<-GetCandidateList(mSet)
 mSet<-SetCandidate(mSet, "D-Glucose-6-phosphate", "Beta-D-Glucose 6-phosphate")
 ```
 
-##Get metabolites with graphId in the pathway
+## Get metabolites with graphId in the pathway
 
 The metabolites having pathwayId in the metabolite data are extracted.
 
@@ -120,7 +122,7 @@ for(i in 1:length(mSet.map.table[,"HMDB"])){
 }
 ```
 
-##Calculate log2FC from Col0 and mto1
+## Calculate log2FC from Col0 and mto1
 For visualization, log2FC is calculated from the mean of Col0 and the mean of mto1 mutants.
 
 ```{r calculate log2fc}
@@ -138,7 +140,7 @@ Create a matrix to pass to Cytoscape.
 mSet.map.table.graphId.log2FC <-  data.frame(mSet.map.table, mSet.graphIds, log2FC)
 ```
 
-#Step 3: Connect to Cytoscape and Visualize
+# Step 3: Connect to Cytoscape and Visualize
 
 Connect to Cytoscape using RCy3 for visualization.
 **Start Cytoscape before running this chapter**
