@@ -9,6 +9,7 @@ auther: ken kamiya
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::knit_engines$set("Rscript")
 ```
 
 # Abstract
@@ -89,7 +90,7 @@ So we convert names to IDs such as HMDB or KEGG using MetaboAnalystR.
 The same can be done with MetaboAnalyst (https://metaboanalyst.ca) on the Web. Entering a metabolite name returns the match result recognized by MetaBoAnalyst, so you can absorb minor differences in metabolite names.
 In addition, MetaboAnalyst can analyze while generating R code, so it is also possible to use the displayed R code in MetaBoAnalystR after performing ID conversion manually with MetaboAnalyst on the Web.
 
-```{get ids of metabolite data using metaboanalystr}
+```{r get ids of metabolite data using metaboanalystr}
 mSet<-InitDataObjects("NA", "utils", FALSE)
 cmpd.vec<- rownames(AraMetLeaves)
 mSet<-Setup.MapData(mSet, cmpd.vec)
