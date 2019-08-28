@@ -347,4 +347,8 @@ setNodeColorMapping("log2FC", data.values, node.colors, default.color = "#FFFFFF
 #emphasize methionine
 setNodeBorderColorBypass(node.names = "Methionine", new.colors = "#FF0000")
 setNodeBorderWidthBypass(node.names = "Methionine", new.sizes = 10)
+
+#Gray out metabolite nodes without data
+RCy3::setNodeColorBypass(node.names = conv.table[setdiff(pathway.graphIds, mSet.graphIds)], new.colors = "#c0c0c0")
+
 ```
