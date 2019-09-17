@@ -96,18 +96,18 @@ for(i in 1:length(pathway.HMDBIDs)){
 ## Get IDs of metabolite data using MetaboAnalystR
 Metabolite data names are written in various ways and are not stable.
 
-So we convert names to IDs such as HMDB or KEGG using MetaboAnalystR.
+So we must convert names to IDs such as HMDB or KEGG using MetaboAnalystR.
+
+Entering metabolite names returns the match result recognized by MetaBoAnalyst, so you can absorb minor differences in metabolite names.
 
 The same can be done with MetaboAnalyst (https://metaboanalyst.ca) on the Web. 
 
-Entering a metabolite name returns the match result recognized by MetaBoAnalyst, so you can absorb minor differences in metabolite names.
+In addition, MetaboAnalyst can generate R code according to your operation, so it is also possible to use R code displayed at MetaBoAnalyst.
 
-In addition, MetaboAnalyst can analyze while generating R code, so it is also possible to use the displayed R code in MetaBoAnalystR after performing ID conversion manually with MetaboAnalyst on the Web.
 
 ```{r get ids of metabolite data using metaboanalystr}
 mSet<-InitDataObjects("NA", "utils", FALSE)
-cmpd.vec<- rownames(AraMetLeaves)
-mSet<-Setup.MapData(mSet, cmpd.vec)
+mSet<-Setup.MapData(mSet, AraMetLeaves)
 mSet<-CrossReferencing(mSet, "name", T, T, T, T, T)
 mSet<-CreateMappingResultTable(mSet)
 mSet<-PerformDetailMatch(mSet, "Inositol-1-phosphate")
