@@ -28,13 +28,9 @@ if(!"rWikiPathways" %in% installed.packages()){
     if (!requireNamespace("BiocManager", quietly=TRUE))
         install.packages("BiocManager")
     BiocManager::install("rWikiPathways")
-}
-library(rWikiPathways)
-if(!"RCy3" %in% installed.packages()){
-    if (!requireNamespace("BiocManager", quietly=TRUE))
-        install.packages("BiocManager")
     BiocManager::install("RCy3")
 }
+library(rWikiPathways)
 library(RCy3)
 
 RCy3::installApp('WikiPathways')  #only available in Cytoscape 3.7.0 and above
@@ -110,7 +106,7 @@ mSet.map.table.graphId.log2FC = data.frame(mSet.map.table, mSet.graphIds, log2FC
 
 
 
-### Step 3. Connect to Cytoscape and visalization ###
+### Step 3. Connect to Cytoscape and visalize ###
 
 #Connect to Cytoscape
 RCy3::cytoscapePing()
