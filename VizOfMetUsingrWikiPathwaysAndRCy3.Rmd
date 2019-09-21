@@ -33,7 +33,7 @@ Datasets and assets I used are here.
    - Reference of metabolite data: M. Kusano et al, (2007) https://doi.org/10.1186/1752-0509-1-53
 
 
-# Step 0: Intstall Cytoscape
+# Step 0: Install Cytoscape
 If you haven't yet installed Cytoscape, install it before running this script.
 
 https://cytoscape.org/download.html
@@ -43,7 +43,7 @@ The following script only works if you have launched Cytoscape.
 # Step 1: Prepare R Packages and Metabolite Data
 This pattern of installation had succeeded on my environment(Ubuntu 16.04, R 3.6.0).
 
-It doesn't matter how you do it, so install "rWikiPathways", "RCy3", "MetabAnalystR" according to your own environment.
+It doesn't matter how you do it, install "rWikiPathways", "RCy3", "MetabAnalystR" according to your own environment.
 
  - Especially, Installing MetaboAnalystR is extremely difficult, so please refer to (https://github.com/xia-lab/MetabanaristR) for installation.
 
@@ -74,7 +74,7 @@ Col0Mean <-  apply(AraMetLeaves[, Col0.index], 1, mean)
 mto1Mean <-  apply(AraMetLeaves[, mto1.index], 1, mean)
 ```
 
-# Step 2: Gather informations (espescially metabolite ID)
+# Step 2: Gather informations
 
 ## Get graphIds from the pathway
 Before getting pathways you need to know "graphId" in WikiPathways.
@@ -148,8 +148,8 @@ abs.log2FC <-  max(abs(min.log2FC), max.log2FC)
 data.values <-  c(-abs.log2FC, 0, abs.log2FC)
 ```
 
-## Make final matrix
-Create a matrix to pass to Cytoscape.
+## Make matrix
+Create the matrix to pass to Cytoscape.
 
 ```{r make matrix}
 mSet.map.table.graphId.log2FC <-  data.frame(mSet.map.table, mSet.graphIds, log2FC)
@@ -187,6 +187,5 @@ names(conv.table) = table$GraphID
 
 #Gray out metabolite nodes without data
 RCy3::setNodeColorBypass(node.names = conv.table[setdiff(pathway.graphIds, mSet.graphIds)], new.colors = "#c0c0c0")
-
 ```
 

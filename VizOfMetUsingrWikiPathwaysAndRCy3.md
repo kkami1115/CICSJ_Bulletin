@@ -28,7 +28,7 @@ strong methionine accumulation.
   - Reference of metabolite data: M. Kusano et al, (2007)
     <https://doi.org/10.1186/1752-0509-1-53>
 
-# Step 0: Intstall Cytoscape
+# Step 0: Install Cytoscape
 
 If you haven’t yet installed Cytoscape, install it before running this
 script.
@@ -113,9 +113,6 @@ library(devtools)
 devtools::install_github("xia-lab/MetaboAnalystR", build = TRUE, build_opts = c("--no-resave-data", "--no-manual", "--no-build-vignettes"))
 ```
 
-    ## Skipping install of 'MetaboAnalystR' from a github remote, the SHA1 (593819a8) has not changed since last install.
-    ##   Use `force = TRUE` to force installation
-
 ``` r
 library(MetaboAnalystR)
 ```
@@ -170,7 +167,7 @@ Col0Mean <-  apply(AraMetLeaves[, Col0.index], 1, mean)
 mto1Mean <-  apply(AraMetLeaves[, mto1.index], 1, mean)
 ```
 
-# Step 2: Gather informations (espescially metabolite ID)
+# Step 2: Gather informations
 
 ## Get graphIds from the pathway
 
@@ -300,10 +297,9 @@ abs.log2FC <-  max(abs(min.log2FC), max.log2FC)
 data.values <-  c(-abs.log2FC, 0, abs.log2FC)
 ```
 
-## Make final matrix
+## Make matrix
 
-Create a matrix to pass to
-Cytoscape.
+Create a matrix to pass to Cytoscape.
 
 ``` r
 mSet.map.table.graphId.log2FC <-  data.frame(mSet.map.table, mSet.graphIds, log2FC)
@@ -350,5 +346,4 @@ setNodeBorderWidthBypass(node.names = "Methionine", new.sizes = 10)
 
 #Gray out metabolite nodes without data
 RCy3::setNodeColorBypass(node.names = conv.table[setdiff(pathway.graphIds, mSet.graphIds)], new.colors = "#c0c0c0")
-
 ```
