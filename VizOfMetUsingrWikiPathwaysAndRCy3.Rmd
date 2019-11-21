@@ -11,7 +11,7 @@ knitr::knit_engines$set("Rscript")
 ```
 
 # Abstract
-This is the support page for "メタボロームデータ解析および解釈に資する可視化手法" in CICSJ Bulletin July 2019.
+This is the support page for "メタボロームデータ解析および解釈に資する可視化手法" in CICSJ Bulletin.
 
 This page describes the script in detail regarding the last chapter of pathway visualization.
 
@@ -41,11 +41,13 @@ https://cytoscape.org/download.html
 The following script only works if you have launched Cytoscape.
 
 # Step 1: Prepare R Packages and Metabolite Data
-This pattern of installation had succeeded on my environment(Ubuntu 16.04, R 3.6.0).
+This pattern of installation succeeded on my environment(Ubuntu 16.04, R 3.6.0).
 
 It doesn't matter how you do it, install "rWikiPathways", "RCy3", "MetaboAnalystR" according to your own environment.
 
- - Especially, Installing MetaboAnalystR is extremely difficult, so please refer to (https://github.com/xia-lab/MetabanaristR) for installation.
+ - Especially, Installing MetaboAnalystR is extremely difficult, so please refer to (https://github.com/xia-lab/MetaboanalystR) for installation.
+
+ - On Windows in my environment, even if the installation was successful, an error occurred when executing the code. Please execute the following code on Linux or macOS.
 
 ```{r prepare R packages}
 install.packages("BiocManager", repos = "https://cran.rstudio.com")
