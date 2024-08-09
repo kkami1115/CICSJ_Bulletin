@@ -86,13 +86,18 @@ https://www.wikipathways.org/index.php/Help:WikiPathways_Webservice/API#GraphId
 graphId is an individual ID of a metabolite assigned in the pathway. By using this, the pathway metabolite and metabolite data are linked.
 
 ```{r get graphids from pathway}
-pathway.HMDBIDs <- rWikiPathways::getXrefList(pathway="WP3622", systemCode="Ch")
-pathway.graphIds <-  NULL
-for(i in 1:length(pathway.HMDBIDs)){
-  pathways <- rWikiPathways::findPathwaysByXref(pathway.HMDBIDs[[i]], systemCode="Ch") 
-  targeted.pathway <- pathways[purrr::map_lgl(pathways, ~ .$id == "WP3622")][[1]]
-  pathway.graphIds[[i]] <- as.character(targeted.pathway$fields$graphId$values)
-}
+download.file("https://webservice.wikipathways.org/getPathway?pwId=WP3622&format=json",destfile = "tmp.json")
+WP3622_json = jsonlite::read_json("tmp.json")
+WP3622_xml = WP3622_json$pathway$gpml %>% read_xml()
+
+xml_list <- WP3622_xml %>% xml2::as_list() %>% as_tibble() %>% pull(Pathway)
+WP3622_xref_data <- lapply(xml_list, function(x) {
+    xref_attrs <- attributes(x)
+    xref_attrs1 <- attributes(x$Xref)
+    return(c(unlist(xref_attrs),  unlist( xref_attrs1 ) )  %>% as.data.frame() %>% t() %>% as.data.frame() ) 
+})
+
+WP3622_xref_data <-  keep(WP3622_xref_data, names(WP3622_xref_data) == "DataNode") %>% bind_rows(.id = "DataNode")
 ```
 
 ## Get IDs of metabolite data using MetaboAnalystR
@@ -108,16 +113,12 @@ In addition, MetaboAnalyst can generate R code according to your operation, so i
 
 
 ```{r get ids of metabolite data using metaboanalystr}
-mSet<-InitDataObjects("NA", "utils", FALSE)
-mSet<-Setup.MapData(mSet, AraMetLeaves)
-mSet<-CrossReferencing(mSet, "name", T, T, T, T, T)
-mSet<-CreateMappingResultTable(mSet)
-mSet<-PerformDetailMatch(mSet, "Inositol-1-phosphate")
-mSet<-GetCandidateList(mSet)
-mSet<-SetCandidate(mSet, "Inositol-1-phosphate", "Inositol phosphate")
-mSet<-PerformDetailMatch(mSet, "D-Glucose-6-phosphate")
-mSet<-GetCandidateList(mSet)
-mSet<-SetCandidate(mSet, "D-Glucose-6-phosphate", "Beta-D-Glucose 6-phosphate")
+#Get metabolite ids matrix using MetaboAnalystR
+mSet <- InitDataObjects("NA", "utils", FALSE)
+cmpd.vec <- rownames(AraMetLeaves)
+mSet <- Setup.MapData(mSet, cmpd.vec)
+mSet <- CrossReferencing(mSet, "name", T, T, T, T, T)
+mSet <- CreateMappingResultTable(mSet)
 ```
 
 ## Get metabolites with graphId in the pathway
@@ -125,36 +126,24 @@ mSet<-SetCandidate(mSet, "D-Glucose-6-phosphate", "Beta-D-Glucose 6-phosphate")
 The metabolites having pathwayId in the metabolite data are extracted.
 
 ```{r get metabolites with graphId in the pathway}
-mSet.map.table <- mSet$dataSet$map.table
-mSet.graphIds <- NULL
-for(i in 1:length(mSet.map.table[,"HMDB"])){
-  pathways <- findPathwaysByXref(mSet.map.table[,"HMDB"][[i]], systemCode="Ch")
-  targeted.pathway <- pathways[purrr::map_lgl(pathways, ~ .$id == "WP3622")]
-  if(length(targeted.pathway) == 0){
-    mSet.graphIds[[i]] <- "NA"
-  }
-  if(!length(targeted.pathway) == 0){
-    mSet.graphIds[[i]] <- targeted.pathway[[1]]$fields$graphId$values
-  }
-}
-```
+#Extract metabolites with graphID in the pathway
+mSet.map.table <- mSet$dataSet$map.table %>% data.frame()
 
-## Calculate log2FC from Col0 and mto1
-For visualization, log2FC is calculated from the mean of Col0 and the mean of mto1 mutants.
+Col0.index <- grep("Col0", colnames(AraMetLeaves), perl = TRUE)
+mto1.index <- grep("mto1", colnames(AraMetLeaves), perl = TRUE)
+Col0Mean <- apply(AraMetLeaves[, Col0.index], 1, mean)
+mto1Mean <- apply(AraMetLeaves[, mto1.index], 1, mean)
+#Calculate log2FC from Col0 and mto1
+log2FC <- log2(mto1Mean / Col0Mean)
+min.log2FC <- min(log2FC, na.rm = TRUE)
+max.log2FC <- max(log2FC, na.rm = TRUE)
+abs.log2FC <- max(abs(min.log2FC), max.log2FC)
+data.values <- c(-abs.log2FC, 0, abs.log2FC)
 
-```{r calculate log2fc}
-log2FC <-  log2(mto1Mean / Col0Mean)
-min.log2FC <-  min(log2FC, na.rm = TRUE)
-max.log2FC <-  max(log2FC, na.rm = TRUE)
-abs.log2FC <-  max(abs(min.log2FC), max.log2FC)
-data.values <-  c(-abs.log2FC, 0, abs.log2FC)
-```
-
-## Make matrix
-Create the matrix to pass to Cytoscape.
-
-```{r make matrix}
-mSet.map.table.graphId.log2FC <-  data.frame(mSet.map.table, mSet.graphIds, log2FC)
+#Make matrix
+mSet.map.table.graphId.log2FC <- left_join(mSet.map.table, WP3622_xref_data %>% filter(Database == "HMDB"), by = c("HMDB" = "ID")) %>%
+  filter( !is.na(GraphId ) ) %>%
+  left_join( as.data.frame(log2FC) %>% rownames_to_column(), by = c("Query" = "rowname") )
 ```
 
 # Step 3: Connect to Cytoscape and Visualize
@@ -175,7 +164,8 @@ RCy3::commandsRun('wikipathways import-as-pathway id=WP3622')
 toggleGraphicsDetails()
 
 #load metabolite data and visualize 
-loadTableData(mSet.map.table.graphId.log2FC, data.key.column = "mSet.graphIds", table.key.column = "GraphID")
+loadTableData(mSet.map.table.graphId.log2FC, data.key.column = "GraphId", table.key.column = "GraphID")
+library(RColorBrewer)
 node.colors <- c(rev(brewer.pal(length(data.values), "RdBu")))
 setNodeColorMapping("log2FC", data.values, node.colors, default.color = "#FFFFFF", style.name = "WikiPathways")
 
